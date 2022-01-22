@@ -1,0 +1,5 @@
+print stampa;
+float numberFloat;
+int floatI;
+a = 5 + 3;
+b = a + 5;

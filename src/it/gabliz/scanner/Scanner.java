@@ -10,6 +10,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import static it.gabliz.util.Logger.formatLogNewLine;
+
 /**
  * Classe che gestisce lo scanner del nostro progetto.
  * @author Gabliz
@@ -55,7 +57,7 @@ public class Scanner {
 	private Logger logger;
 
 	/** Dichiarazione path di base di tutti i file che leggerà questo scanner */
-	private static final String PATH_ROOT = "res/";
+	private static final String PATH_ROOT = "./res/";
 
 	/** Numero minimo di cifre di un numero float */
 	private static final int FLOAT_MIN_CIFRE = 1;
@@ -93,7 +95,6 @@ public class Scanner {
 		loadSymbolsHashMap();
 		loadKeywordsHashMap();
 		this.currentToken = null;
-
 	}
 
 
@@ -147,27 +148,27 @@ public class Scanner {
 		/* prendo il prossimo carattere dall'input */
 		int nextCharInt = buffer.read();
 		char nextChar = (char) nextCharInt;
-		logger.d("Ho letto dal buffer (consumando) il carattere '" + nextChar + "'.");
+		logger.d("Ho letto dal buffer (consumando) il carattere '" + formatLogNewLine(nextChar) + "'.");
 
 		/* inizio ciclo per controllo caratteri per creare token */
 		while(nextChar != EOF && nextCharInt != -1) {
 
 			if(nextChar == Token.CHAR_NEW_LINE) {
 				riga++;
-				logger.d("Trovato carattere di terminazione riga. Proseguo con riga " + riga + ".");
+				logger.d("La prossima riga da guardare sarà riga " + riga + ".");
 			} else if(!skipChars.contains(nextChar)) {
 				if(numbers.contains(nextChar)) {
-					logger.d("Trovato carattere di tipo numerico. Rimetto il carattere nel buffer e procedo controllo numero.");
+					logger.d("Trovato carattere di tipo numerico. Rimetto il carattere nel buffer e procedo controllo numeri successivi.");
 					buffer.unread(nextChar);
 					return scanAndGetNumberToken();
 				}
 				if(letters.contains(nextChar)) {
-					logger.d("Trovato carattere di tipo letterale. Rimetto il carattere nel buffer e procedo controllo lettere.");
+					logger.d("Trovato carattere di tipo letterale. Rimetto il carattere nel buffer e procedo controllo lettere successive.");
 					buffer.unread(nextChar);
 					return scanAndGetIdToken();
 				}
 				if(symbols.containsKey(nextChar)) {
-					return new Token(symbols.get(nextChar), riga);
+					return new Token(symbols.get(nextChar), riga).logCreation();
 				}
 				throw new AcdcLexicalException("Rilevato errore lessicale dello scanner.");
 			}
@@ -176,11 +177,12 @@ public class Scanner {
 			char oldChar = nextChar;
 			nextCharInt = buffer.read();
 			nextChar = (char) nextCharInt;
-			logger.d("Trovato carattere di skip ('" + oldChar +"'). Prossimo carattere in lettura = '" + nextChar + "'");
+			logger.d("Trovato carattere di skip ('" + formatLogNewLine(oldChar) +"'). " +
+					"Prossimo carattere in lettura = '" + formatLogNewLine(nextChar) + "'");
 		}
 
 		/* se arrivati a questo punto non ho più altri token da generare e sono arrivato a fine file */
-		return new Token(TokenType.EOF, riga);
+		return new Token(TokenType.EOF, riga).logCreation();
 
 	}
 
@@ -209,7 +211,7 @@ public class Scanner {
 			number.append(c);
 			if(!numbers.contains(peekChar())) {
 				buffer.unread(c);
-				return new Token(TokenType.INT, riga, number.toString());
+				return new Token(TokenType.INT, riga, number.toString()).logCreation();
 			} else {
 				while(numbers.contains(peekChar())) {
 					c = readChar();
@@ -217,13 +219,13 @@ public class Scanner {
 					i++;
 				}
 				if (i >= FLOAT_MIN_CIFRE && i <= FLOAT_MAX_CIFRE) {
-					return new Token(TokenType.FLOAT, riga, number.toString());
+					return new Token(TokenType.FLOAT, riga, number.toString()).logCreation();
 				} else  {
 					throw new AcdcLexicalException("Trovato un numero float con più di " + FLOAT_MAX_CIFRE + " cifre alla riga: "+ riga + ".");
 				}
 			}
 		}
-		else return new Token(TokenType.INT, riga, number.toString());
+		else return new Token(TokenType.INT, riga, number.toString()).logCreation();
 	}
 
 	/**
@@ -241,8 +243,8 @@ public class Scanner {
 			word.append(ch);
 		}
 		if (keywords.containsKey(word.toString())) {
-			return new Token(keywords.get(word.toString()), riga);
-		} else return new Token(TokenType.ID, riga, word.toString());
+			return new Token(keywords.get(word.toString()), riga).logCreation();
+		} else return new Token(TokenType.ID, riga, word.toString()).logCreation();
 	}
 
 	/**

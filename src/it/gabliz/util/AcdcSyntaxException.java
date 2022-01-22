@@ -7,5 +7,6 @@ package it.gabliz.util;
 public class AcdcSyntaxException extends Exception {
     public AcdcSyntaxException (String errore) {
         super(errore  + "\n");
+        Logger.e("", "Rilevata AcdcSyntaxException ("+ errore +").");
     }
 }

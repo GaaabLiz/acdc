@@ -2,7 +2,7 @@ package it.gabliz.token;
 
 import it.gabliz.util.Logger;
 
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Classe che rappresenta la singola istanza 'TOKEN'.
@@ -25,6 +25,7 @@ public class Token {
 	public static final Character CHAR_NEW_LINE = '\n';
 	public static final Character CHAR_DOT = '.';
 	private final String CLASS_NAME = this.getClass().getSimpleName().toUpperCase();
+	private static final Set<TokenType> tokenTypesWithValues = Set.of(TokenType.ID, TokenType.INT, TokenType.FLOAT);
 
 	/**
 	 * Costruttore con campo valore.
@@ -36,7 +37,7 @@ public class Token {
 		this.riga = riga;
 		this.tipo = tipo;
 		this.val = val;
-		Logger.i(CLASS_NAME, "Creato nuovo token: \"" + this.toString() + "\".");
+		checkTokenConstructorWithVal();
 	}
 
 	/**
@@ -48,7 +49,7 @@ public class Token {
 		this.riga = riga;
 		this.tipo = tipo;
 		this.val = EMPTY_VAL;
-		Logger.i(CLASS_NAME, "Creato nuovo token: \"" + this.toString() + "\".");
+		checkTokenConstructorWithoutVal();
 	}
 
 	/**
@@ -60,6 +61,21 @@ public class Token {
 	 * @return String Una stringa che rappresenta questo token senza valore
 	 */
 	private String getStringWithoutVal() {return "<" + tipo + "," + "r:" + riga + ">";}
+
+	private void checkTokenConstructorWithVal() {
+		if(!tokenTypesWithValues.contains(this.tipo))
+			Logger.w(CLASS_NAME, "Il costruttore per il token " + this.tipo + " è errato.");
+	}
+
+	private void checkTokenConstructorWithoutVal() {
+		if(tokenTypesWithValues.contains(this.tipo))
+			Logger.w(CLASS_NAME, "Il costruttore per il token " + this.tipo + " è errato.");
+	}
+
+	public Token logCreation() {
+		Logger.i(CLASS_NAME, "Creato nuovo token: \"" + this.toString() + "\".");
+		return this;
+	}
 
 	public String toString() {
 		if(!Objects.equals(this.val, EMPTY_VAL)) {
@@ -78,6 +94,7 @@ public class Token {
 		}
 		Boolean cond1 = this.tipo == ((Token)obj).getTipo();
 		Boolean cond2 = Objects.equals(this.val, ((Token) obj).getVal());
+		Boolean cond3 = Objects.equals(this.riga, ((Token) obj).getRiga());
 		return cond1 && cond2;
 	}
 

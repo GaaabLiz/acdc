@@ -2,6 +2,7 @@ import it.gabliz.scanner.Scanner;
 import it.gabliz.token.Token;
 import it.gabliz.token.TokenType;
 import it.gabliz.util.AcdcLexicalException;
+import it.gabliz.util.TokenConstructorException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -11,7 +12,7 @@ import java.io.IOException;
 public class TestScanner {
 	
 	@Test
-	public void testScanId() throws IOException, AcdcLexicalException {
+	public void testScanId() throws IOException, AcdcLexicalException, TokenConstructorException {
 		String fileName = "scanner/testId.txt";
 		Scanner scanner = new Scanner(fileName);
 		assertEquals(new Token(TokenType.ID, 1, "jskjdsfhkjdshkf").toString(), scanner.nextToken().toString());
@@ -20,7 +21,7 @@ public class TestScanner {
 	}
 
 	@Test
-	public void testScanId2() throws IOException, AcdcLexicalException {
+	public void testScanId2() throws IOException, AcdcLexicalException, TokenConstructorException {
 		String fileName = "scanner/testScanId.txt";
 		Scanner scanner = new Scanner(fileName);
 		assertEquals(new Token(TokenType.TYINT, 1).toString(), scanner.nextToken().toString());
@@ -33,7 +34,7 @@ public class TestScanner {
 	}
 
 	@Test
-	public void testScanNum() throws IOException, AcdcLexicalException {
+	public void testScanNum() throws IOException, AcdcLexicalException, TokenConstructorException {
 		String fileName = "scanner/testScanNum.txt";
 		Scanner scanner = new Scanner(fileName);
 		assertEquals(new Token(TokenType.INT, 1, "123").toString(), scanner.nextToken().toString());
@@ -42,7 +43,7 @@ public class TestScanner {
 	}
 
 	@Test
-	public void testScanner() throws IOException, AcdcLexicalException {
+	public void testScanner() throws IOException, AcdcLexicalException, TokenConstructorException {
 		String fileName = "scanner/testScanner.txt";
 		Scanner scanner = new Scanner(fileName);
 		assertEquals(new Token(TokenType.TYINT, 1).toString(), scanner.nextToken().toString());
@@ -68,7 +69,7 @@ public class TestScanner {
 	}
 
 	@Test
-	public void testOP() throws IOException, AcdcLexicalException {
+	public void testOP() throws IOException, AcdcLexicalException, TokenConstructorException {
 		String fileName = "scanner/TestOP.txt";
 		Scanner scanner = new Scanner(fileName);
 		assertEquals(new Token(TokenType.PLUS, 1).toString(), scanner.nextToken().toString());
@@ -85,42 +86,25 @@ public class TestScanner {
 	}
 
 	@Test
-	public void testEOF() throws IOException, AcdcLexicalException {
+	public void testEOF() throws IOException, AcdcLexicalException, TokenConstructorException {
 		String fileName = "scanner/testEOF.txt";
 		Scanner scanner = new Scanner(fileName);
 		assertEquals(new Token(TokenType.EOF, 1).toString(), scanner.nextToken().toString());
 	}
 
 	@Test
-	public void testEcc() throws IOException, AcdcLexicalException {
+	public void testEcc() throws IOException, AcdcLexicalException , TokenConstructorException {
 		String fileName = "scanner/testEcc.txt";
 		Scanner scanner = new Scanner(fileName);
 		assertEquals(new Token(TokenType.ID, 2, "ciao").toString(), scanner.nextToken().toString());
 		assertThrows(AcdcLexicalException.class, scanner::nextToken);
 		assertThrows(AcdcLexicalException.class, scanner::nextToken);
-		assertEquals(new Token(TokenType.INT, 4, "123").toString(), scanner.nextToken().toString());
 		assertThrows(AcdcLexicalException.class, scanner::nextToken);
-
+		assertThrows(AcdcLexicalException.class, scanner::nextToken);
+		assertEquals(new Token(TokenType.INT, 5, "123").toString(), scanner.nextToken().toString());
+		assertEquals(new Token(TokenType.INT, 6, "123").toString(), scanner.nextToken().toString());
+		assertEquals(new Token(TokenType.ID, 6, "a").toString(), scanner.nextToken().toString());
+		assertThrows(AcdcLexicalException.class, scanner::nextToken);
 	}
-
-	@Test
-	public void testEcc2() throws IOException, AcdcLexicalException {
-		String path = "scanner/testEcc2.txt";
-		Scanner scanner = new Scanner(path);
-		assertThrows(AcdcLexicalException.class, scanner::nextToken);
-		assertEquals(new Token(TokenType.TYFLOAT, 2).toString(), scanner.nextToken().toString());
-		assertEquals(new Token(TokenType.TYFLOAT, 3).toString(), scanner.nextToken().toString());
-		assertEquals(new Token(TokenType.ID, 4, "ciao").toString(), scanner.nextToken().toString());
-		assertThrows(AcdcLexicalException.class, scanner::nextToken);
-		assertEquals(new Token(TokenType.TYFLOAT, 5).toString(), scanner.nextToken().toString());
-		assertEquals(new Token(TokenType.TYFLOAT, 6).toString(), scanner.nextToken().toString());
-		assertThrows(AcdcLexicalException.class, scanner::nextToken);
-		assertEquals(new Token(TokenType.TYINT, 8).toString(), scanner.nextToken().toString());
-		assertEquals(new Token(TokenType.TYINT, 9).toString(), scanner.nextToken().toString());
-		assertEquals(new Token(TokenType.INT, 10, "123").toString(), scanner.nextToken().toString());
-		assertThrows(AcdcLexicalException.class, scanner::nextToken);
-		assertEquals(new Token(TokenType.TYINT, 11).toString(), scanner.nextToken().toString());
-	}
-
 
 }

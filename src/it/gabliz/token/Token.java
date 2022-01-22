@@ -1,6 +1,7 @@
 package it.gabliz.token;
 
 import it.gabliz.util.Logger;
+import it.gabliz.util.TokenConstructorException;
 
 import java.util.*;
 
@@ -32,8 +33,11 @@ public class Token {
 	 * @param tipo il tipo di token
 	 * @param riga la riga su cui si trovava il token
 	 * @param val il valore associato
+	 * @throws TokenConstructorException se parametri token errati.
 	 */
-	public Token(TokenType tipo, int riga, String val) {
+	public Token(TokenType tipo, int riga, String val) throws TokenConstructorException {
+		if(tipo == null) throw new TokenConstructorException("Il tipo di un token non può essere nullo.");
+		if(riga <=0 ) throw new TokenConstructorException("La riga non può essere 0 o negativa.");
 		this.riga = riga;
 		this.tipo = tipo;
 		this.val = val;
@@ -44,8 +48,11 @@ public class Token {
 	 * Costruttore senza campo valore.
 	 * @param tipo il tipo di token
 	 * @param riga la riga su cui si trovava il token
+	 * @throws TokenConstructorException se parametri token errati.
 	 */
-	public Token(TokenType tipo, int riga) {
+	public Token(TokenType tipo, int riga) throws TokenConstructorException {
+		if(tipo == null) throw new TokenConstructorException("Il tipo di un token non può essere nullo.");
+		if(riga <=0 ) throw new TokenConstructorException("La riga non può essere 0 o negativa.");
 		this.riga = riga;
 		this.tipo = tipo;
 		this.val = EMPTY_VAL;
@@ -73,7 +80,7 @@ public class Token {
 	}
 
 	public Token logCreation() {
-		Logger.i(CLASS_NAME, "Creato nuovo token: \"" + this.toString() + "\".");
+		Logger.i(CLASS_NAME, "Creato nuovo token: \"" + this + "\".");
 		return this;
 	}
 
@@ -87,7 +94,8 @@ public class Token {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (getClass() != obj.getClass()) {
+		if(this == obj) return true;
+		if (!(obj instanceof Token)) {
 			Logger.e(CLASS_NAME, "Tentativo di equals con due oggetti di classi differenti o non compatibili.");
 			Logger.e(CLASS_NAME, "I tipi in questione sono : " + getClass() + " e " + obj.getClass());
 			return false;
@@ -95,7 +103,7 @@ public class Token {
 		Boolean cond1 = this.tipo == ((Token)obj).getTipo();
 		Boolean cond2 = Objects.equals(this.val, ((Token) obj).getVal());
 		Boolean cond3 = Objects.equals(this.riga, ((Token) obj).getRiga());
-		return cond1 && cond2;
+		return cond1 && cond2 && cond3;
 	}
 
 	public int getRiga() {

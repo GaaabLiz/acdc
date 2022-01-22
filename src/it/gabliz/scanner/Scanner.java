@@ -4,6 +4,7 @@ import it.gabliz.token.Token;
 import it.gabliz.token.TokenType;
 import it.gabliz.util.AcdcLexicalException;
 import it.gabliz.util.Logger;
+import it.gabliz.util.TokenConstructorException;
 
 import java.io.*;
 import java.util.Arrays;
@@ -28,18 +29,19 @@ public class Scanner {
 	/** Oggetto per gestire il buffer di caratteri da leggere */
 	private PushbackReader buffer;
 
+	@SuppressWarnings("unused")
 	@Deprecated
 	private String log;
 
 	/** Lista dei caratteri da saltare */
-	private List<Character> skipChars = Arrays.asList(' ', '\n', '\t', '\r', EOF);
+	private final List<Character> skipChars = Arrays.asList(' ', '\n', '\t', '\r', EOF);
 
 	/** Lista dei caratteri che rappresentano lettere */
-	private List<Character> letters = Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+	private final List<Character> letters = Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
 			'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z');
 
 	/** Lista dei caratteri che rappresentano numeri */
-	private List<Character> numbers = Arrays.asList('0', '1', '2', '3', '4', '5', '6', '7', '8', '9');
+	private final List<Character> numbers = Arrays.asList('0', '1', '2', '3', '4', '5', '6', '7', '8', '9');
 
 	/** Hashmap per associare i tipi di token e i relativi caratteri char
 	 * @see it.gabliz.token.TokenType */
@@ -54,16 +56,19 @@ public class Scanner {
 
 	/** Classe per gestire i log di questa classe.
 	 * @see Logger per gestione log. */
-	private Logger logger;
+	private final Logger logger;
 
 	/** Dichiarazione path di base di tutti i file che leggerà questo scanner */
 	private static final String PATH_ROOT = "./res/";
 
 	/** Numero minimo di cifre di un numero float */
-	private static final int FLOAT_MIN_CIFRE = 1;
+	private static final int FLOAT_MIN_DIGIT = 1;
 
 	/** Numero massimo di cifre di un numero float */
-	private static final int FLOAT_MAX_CIFRE = 4;
+	private static final int FLOAT_MAX_DIGIT = 4;
+
+	/** Abilitazione dei log di tutte le chiamate di {@link #peekChar()} o {@link #readChar()} */
+	private static final Boolean ENABLE_PEEK_READ_CHAR_LOGGIN = false;
 
 
 	/**
@@ -106,11 +111,12 @@ public class Scanner {
 	 * @return Il token corrente. Il ritorno di questa funzione dipende dal token attuale:
 	 * - Se currentToken != null -> la nextToken ha già assegnato il token e lo ritorno.
 	 * - se currentToken == null -> chiamo la nextToken che assegnerà il nuovo token e lo ritorno.
-	 * @throws IOException
-	 * @throws AcdcLexicalException
+	 * @throws IOException errore di lettura buffer.
+	 * @throws AcdcLexicalException Se viene rilevato un errore lessicale.
+	 * @throws TokenConstructorException Se vengono passati parametri errati al token.
 	 */
-	public Token peekToken() throws IOException, AcdcLexicalException {
-		logger.d("Peektoken chiamata con currentToken = \"" + currentToken + "\".");
+	public Token peekToken() throws IOException, AcdcLexicalException, TokenConstructorException {
+		logger.d("PeekToken chiamata con currentToken = \"" + currentToken + "\".");
 		if(currentToken == null) {
 			currentToken = nextToken();
 		}
@@ -123,9 +129,10 @@ public class Scanner {
 	 * Questo metodo può essere visto come una rappresentazione dell'automa riconoscitore.
 	 * @return il token recuperato.
 	 * @throws IOException Per eventuali errori di lettura nel buffer.
-	 * @throws AcdcLexicalException
+	 * @throws AcdcLexicalException Se viene rilevato un errore lessicale.
+	 * @throws TokenConstructorException Se vengono passati parametri errati al token.
 	 */
-	public Token nextToken() throws IOException, AcdcLexicalException {
+	public Token nextToken() throws IOException, AcdcLexicalException, TokenConstructorException {
 
 		/* stampo log */
 		logger.d("nextToken chiamata con currentToken = \"" + currentToken + "\".");
@@ -193,39 +200,34 @@ public class Scanner {
 	 * @return il token numero di tipo INT o FLOAT associato al numero/numeri in input nel buffer.
 	 * @throws IOException se si sono verificati errori di lettura del buffer.
 	 * @throws AcdcLexicalException Se vengono trovate più di quattro cifre dopo la virgola.
+	 * @throws TokenConstructorException Se vengono passati parametri errati al token.
 	 */
-	private Token scanAndGetNumberToken() throws IOException, AcdcLexicalException {
-
-		char c;
-		int i = 0;
+	private Token scanAndGetNumberToken() throws IOException, AcdcLexicalException, TokenConstructorException {
+		int cifre = 0;
 		StringBuilder number = new StringBuilder();
 
 		while(numbers.contains(peekChar())) {
-			c = readChar();
-			number.append(c);
+			number.append(readChar());
 		}
 
-		c = peekChar();
-		if(c == Token.CHAR_DOT) {
-			c = readChar();
-			number.append(c);
-			if(!numbers.contains(peekChar())) {
-				buffer.unread(c);
-				return new Token(TokenType.INT, riga, number.toString()).logCreation();
+		if(peekChar() != Token.CHAR_DOT)
+			return new Token(TokenType.INT, riga, number.toString()).logCreation();
+
+		number.append(readChar());
+		while(numbers.contains(peekChar())) {
+			number.append(readChar());
+			cifre++;
+		}
+
+		if (cifre >= FLOAT_MIN_DIGIT && cifre <= FLOAT_MAX_DIGIT) {
+			return new Token(TokenType.FLOAT, riga, number.toString()).logCreation();
+		} else  {
+			if(cifre == 0) {
+				throw new AcdcLexicalException("Trovato un possibile numero float senza numeri decimali.");
 			} else {
-				while(numbers.contains(peekChar())) {
-					c = readChar();
-					number.append(c);
-					i++;
-				}
-				if (i >= FLOAT_MIN_CIFRE && i <= FLOAT_MAX_CIFRE) {
-					return new Token(TokenType.FLOAT, riga, number.toString()).logCreation();
-				} else  {
-					throw new AcdcLexicalException("Trovato un numero float con più di " + FLOAT_MAX_CIFRE + " cifre alla riga: "+ riga + ".");
-				}
+				throw new AcdcLexicalException("Trovato un numero float con più di " + FLOAT_MAX_DIGIT + " cifre alla riga: "+ riga + "");
 			}
 		}
-		else return new Token(TokenType.INT, riga, number.toString()).logCreation();
 	}
 
 	/**
@@ -234,8 +236,9 @@ public class Scanner {
 	 * alfabetici (e decidere se è parola chiave o no).
 	 * @return il token associato agli input del buffer.
 	 * @throws IOException se si sono verificati errori di lettura del buffer.
+	 * @throws TokenConstructorException Se vengono passati parametri errati al token.
 	 */
-	private Token scanAndGetIdToken() throws IOException {
+	private Token scanAndGetIdToken() throws IOException, TokenConstructorException {
 		char ch;
 		StringBuilder word = new StringBuilder();
 		while (letters.contains(peekChar())) {
@@ -253,10 +256,53 @@ public class Scanner {
 	 * @throws IOException Per eventuali errori di lettura dal buffer.
 	 */
 	@Deprecated
+	@SuppressWarnings("unused")
 	private int simpleReadChar() throws IOException {
 		int c = buffer.read();
 		logger.d("Ho prelevato dal buffer (read) il carattere '" + (char) c + "'.");
 		return c;
+	}
+
+	/**
+	 * Metodo per scansionare i numeri per creare token di tipo intero o float.
+	 * @deprecated Questo è il vecchio metodo per scansione i numeri.
+	 * Usare {@link #scanAndGetNumberToken()}
+	 * @return Il token numerico.
+	 * @throws IOException se si sono verificati errori di lettura del buffer.
+	 * @throws AcdcLexicalException Se vengono trovate più di quattro cifre dopo la virgola.
+	 * @throws TokenConstructorException Se vengono passati parametri errati al token.
+	 */
+	@Deprecated()
+	@SuppressWarnings("unused")
+	private Token scanNumber() throws IOException, AcdcLexicalException, TokenConstructorException {
+		char c;
+		int i = 0;
+		StringBuilder number = new StringBuilder();
+		while(numbers.contains(peekChar())) {
+			c = readChar();
+			number.append(c);
+		}
+		c = peekChar();
+		if(c == Token.CHAR_DOT) {
+			c = readChar();
+			number.append(c);
+			if(!numbers.contains(peekChar())) {
+				buffer.unread(c);
+				return new Token(TokenType.INT, riga, number.toString()).logCreation();
+			} else {
+				while(numbers.contains(peekChar())) {
+					c = readChar();
+					number.append(c);
+					i++;
+				}
+				if (i >= FLOAT_MIN_DIGIT && i <= FLOAT_MAX_DIGIT) {
+					return new Token(TokenType.FLOAT, riga, number.toString()).logCreation();
+				} else  {
+					throw new AcdcLexicalException("Trovato un numero float con più di " + FLOAT_MAX_DIGIT + " cifre alla riga: "+ riga + ".");
+				}
+			}
+		}
+		else return new Token(TokenType.INT, riga, number.toString()).logCreation();
 	}
 
 	/**
@@ -265,7 +311,9 @@ public class Scanner {
 	 * @throws IOException Per eventuali errori di lettura dal buffer.
 	 */
 	private char readChar() throws IOException {
-		return ((char) this.buffer.read());
+		char c = (char) this.buffer.read();
+		if(ENABLE_PEEK_READ_CHAR_LOGGIN) logger.d("readChar = " + formatLogNewLine(c));
+		return (c);
 	}
 
 	/**
@@ -275,6 +323,7 @@ public class Scanner {
 	 */
 	private char peekChar() throws IOException {
 		char c = (char) buffer.read();
+		if(ENABLE_PEEK_READ_CHAR_LOGGIN) logger.d("peekChar = " + formatLogNewLine(c));
 		buffer.unread(c);
 		return c;
 	}

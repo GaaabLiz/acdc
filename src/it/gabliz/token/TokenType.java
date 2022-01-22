@@ -13,5 +13,5 @@ public enum TokenType {
 	TIMES,
 	DIV,
 	SEMI,
-	EOF;
+	EOF
 }

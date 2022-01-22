@@ -76,7 +76,7 @@ public class Token {
 
 	private void checkTokenConstructorWithoutVal() {
 		if(tokenTypesWithValues.contains(this.tipo))
-			Logger.w(CLASS_NAME, "Il costruttore per il token " + this.tipo + " è errato.");
+			Logger.w(CLASS_NAME, "Il costruttore per il token " + this.tipo + " è errato (controllare presenza/assenza valore).");
 	}
 
 	public Token logCreation() {

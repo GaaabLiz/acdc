@@ -18,6 +18,7 @@ public class TestScanner {
 		assertEquals(new Token(TokenType.ID, 1, "jskjdsfhkjdshkf").toString(), scanner.nextToken().toString());
 		assertEquals(new Token(TokenType.ID, 4, "ccc").toString(), scanner.nextToken().toString());
 		assertEquals(new Token(TokenType.ID, 6, "hhhjj").toString(), scanner.nextToken().toString());
+		assertEquals(new Token(TokenType.EOF, 7).toString(), scanner.nextToken().toString());
 	}
 
 	@Test
@@ -31,6 +32,7 @@ public class TestScanner {
 		assertEquals(new Token(TokenType.ID, 5, "intnome").toString(), scanner.nextToken().toString());
 		assertEquals(new Token(TokenType.TYINT, 6).toString(), scanner.nextToken().toString());
 		assertEquals(new Token(TokenType.ID, 6, "nome").toString(), scanner.nextToken().toString());
+		assertEquals(new Token(TokenType.EOF, 6).toString(), scanner.nextToken().toString());
 	}
 
 	@Test
@@ -40,6 +42,7 @@ public class TestScanner {
 		assertEquals(new Token(TokenType.INT, 1, "123").toString(), scanner.nextToken().toString());
 		assertEquals(new Token(TokenType.FLOAT, 2, "123.456").toString(), scanner.nextToken().toString());
 		assertThrows(AcdcLexicalException.class, scanner::nextToken);
+		assertEquals(new Token(TokenType.EOF, 3).toString(), scanner.nextToken().toString());
 	}
 
 	@Test
@@ -65,7 +68,7 @@ public class TestScanner {
 		assertEquals(new Token(TokenType.PRINT, 5).toString(), scanner.nextToken().toString());
 		assertEquals(new Token(TokenType.ID, 5, "b").toString(), scanner.nextToken().toString());
 		assertEquals(new Token(TokenType.SEMI, 5).toString(), scanner.nextToken().toString());
-		assertEquals(new Token(TokenType.EOF, 5, "").toString(), scanner.nextToken().toString());
+		assertEquals(new Token(TokenType.EOF, 5).toString(), scanner.nextToken().toString());
 	}
 
 	@Test
@@ -105,6 +108,8 @@ public class TestScanner {
 		assertEquals(new Token(TokenType.INT, 6, "123").toString(), scanner.nextToken().toString());
 		assertEquals(new Token(TokenType.ID, 6, "a").toString(), scanner.nextToken().toString());
 		assertThrows(AcdcLexicalException.class, scanner::nextToken);
+		assertEquals(new Token(TokenType.ID, 7, "a").toString(), scanner.nextToken().toString());
+		assertEquals(new Token(TokenType.EOF, 7).toString(), scanner.nextToken().toString());
 	}
 
 }

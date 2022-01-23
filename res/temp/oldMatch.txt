@@ -1,0 +1,22 @@
+private Token match(TokenType type) throws AcdcSyntaxException, ScannerException {
+        Token tk;
+        try {
+            tk = scanner.peekToken();
+        }catch (IOException | TokenConstructorException | AcdcLexicalException e) {
+            throw new ScannerException("Durante l'esecuzione del match è stata rilevata un exception " +
+                    "relativa alla peekToken dello scanner: \"" + e.getMessage() + "\".");
+        }
+        if (type.equals(tk.getTipo())) {
+            try {
+                scanner.nextToken();
+            }catch (IOException | TokenConstructorException | AcdcLexicalException e) {
+                throw new ScannerException("Durante l'esecuzione del match è stata rilevata un exception " +
+                        "relativa alla nextToken dello scanner: \"" + e.getMessage() + "\".");
+            }
+            return tk;
+        }
+        else throw new AcdcSyntaxException("Errore di sintassi rilevato durante il match. Il parser si aspettava " +
+                "un token di tipo " + type + " ma ha trovato un token di tipo " + tk.getTipo() + "(Riga"
+                + tk.getRiga() + ").");
+
+    }

@@ -4,10 +4,7 @@ import it.gabliz.ast.*;
 import it.gabliz.scanner.Scanner;
 import it.gabliz.token.Token;
 import it.gabliz.token.TokenType;
-import it.gabliz.util.AcdcLexicalException;
-import it.gabliz.util.AcdcSyntaxException;
-import it.gabliz.util.ScannerException;
-import it.gabliz.util.TokenConstructorException;
+import it.gabliz.util.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,6 +21,10 @@ public class Parser {
     /** Lista dei nodi Dec/St */
     private ArrayList<NodeDecSt> arrayNode;
 
+    /** Classe per gestire i log di questa classe.
+     * @see Logger per gestione log. */
+    private final Logger logger;
+
     /**
      * Costruttore di un parser.
      * @param scanner l'oggetto scanner per chiamare {@link Scanner#peekToken()}
@@ -33,6 +34,8 @@ public class Parser {
         if(scanner == null) throw new IllegalArgumentException("L'oggetto scanner non può essere nullo!");
         this.scanner = scanner;
         this.arrayNode = new ArrayList<>();
+        logger = new Logger(this.getClass().getSimpleName());
+        logger.i("Inizio fase di parsing per il file corrente.");
     }
 
     /**
@@ -61,7 +64,9 @@ public class Parser {
      */
     public NodeProgram parse() throws ScannerException, AcdcSyntaxException {
         try {
-            return parsePrg();
+            NodeProgram nodeProgram = parsePrg();
+            logger.i("Il parser ha restituito : " + nodeProgram);
+            return nodeProgram;
         }catch (IOException | TokenConstructorException | AcdcLexicalException e) {
             throw new ScannerException("Durante l'esecuzione del parser è stata rilevata un exception " +
                     "relativa allo scanner: \"" + e.getMessage() + "\".");

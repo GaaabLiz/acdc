@@ -12,12 +12,12 @@ public class NodeProgram extends NodeAST {
     }
 
     public String toString() {
-        String s = "";
+        StringBuilder s = new StringBuilder();
         for(NodeDecSt node : n) {
-            s += "<" + node.toString() + ">";
+            s.append("<").append(node.toString()).append(">");
         }
 
-        return s;
+        return s.toString();
     }
 
 

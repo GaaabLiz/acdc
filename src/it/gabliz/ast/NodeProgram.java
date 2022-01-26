@@ -1,5 +1,7 @@
 package it.gabliz.ast;
 
+import it.gabliz.visitor.IVisitor;
+
 import java.util.ArrayList;
 
 /** Classe che rappresenta il nodo programma */
@@ -24,5 +26,10 @@ public class NodeProgram extends NodeAST {
     public ArrayList<NodeDecSt> getN() {
         return n;
     }
+    @Override
+    public void accept(IVisitor visitor) {
+        visitor.visit(this);
+    }
+
 
 }

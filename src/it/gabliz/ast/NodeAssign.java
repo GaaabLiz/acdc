@@ -1,6 +1,6 @@
 package it.gabliz.ast;
 
-
+import it.gabliz.visitor.IVisitor;
 
 public class NodeAssign extends NodeStm{
 	
@@ -25,6 +25,11 @@ public class NodeAssign extends NodeStm{
 	
 	public String toString() {
 		return "ID:  " + id + ", " + "Expr: " + expr;
+	}
+
+	@Override
+	public void accept(IVisitor visitor) {
+		visitor.visit(this);
 	}
 
 }

@@ -1,4 +1,6 @@
-package it.gabliz.util;
+package it.gabliz.exception;
+
+import it.gabliz.util.Logger;
 
 public class ScannerException extends Exception {
     public ScannerException (String errore) {

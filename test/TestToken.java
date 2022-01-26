@@ -1,6 +1,6 @@
 import it.gabliz.token.Token;
 import it.gabliz.token.TokenType;
-import it.gabliz.util.TokenConstructorException;
+import it.gabliz.exception.TokenConstructorException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

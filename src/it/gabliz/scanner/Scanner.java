@@ -2,9 +2,9 @@ package it.gabliz.scanner;
 
 import it.gabliz.token.Token;
 import it.gabliz.token.TokenType;
-import it.gabliz.util.AcdcLexicalException;
+import it.gabliz.exception.AcdcLexicalException;
 import it.gabliz.util.Logger;
-import it.gabliz.util.TokenConstructorException;
+import it.gabliz.exception.TokenConstructorException;
 
 import java.io.*;
 import java.util.Arrays;

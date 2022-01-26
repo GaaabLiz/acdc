@@ -1,5 +1,7 @@
 package it.gabliz.ast;
 
+import it.gabliz.visitor.IVisitor;
+
 public class NodeCost extends NodeExpr {
 
     private String value;
@@ -31,6 +33,11 @@ public class NodeCost extends NodeExpr {
 
     public void setType(LangType type) {
         this.type = type;
+    }
+
+    @Override
+    public void accept(IVisitor visitor) {
+        visitor.visit(this);
     }
 
 }

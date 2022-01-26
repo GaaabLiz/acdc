@@ -1,8 +1,7 @@
 import it.gabliz.parser.Parser;
 import it.gabliz.scanner.Scanner;
-import it.gabliz.util.AcdcLexicalException;
-import it.gabliz.util.AcdcSyntaxException;
-import it.gabliz.util.ScannerException;
+import it.gabliz.exception.AcdcSyntaxException;
+import it.gabliz.exception.ScannerException;
 import org.junit.jupiter.api.Test;
 
 import java.io.FileNotFoundException;
@@ -58,6 +57,14 @@ public class TestParser {
     @Test
     public void TestFileScannerCorrect() throws FileNotFoundException, ScannerException, AcdcSyntaxException {
         String fileName = "parser/fileScannerCorrect1.txt";
+        scanner = new Scanner(fileName);
+        parser = new Parser(scanner);
+        assertThrows(AcdcSyntaxException.class, () -> {parser.parse();});
+    }
+
+    @Test
+    public void TestFileParserEmpty() throws FileNotFoundException, ScannerException, AcdcSyntaxException {
+        String fileName = "parser/parserEmpty.txt";
         scanner = new Scanner(fileName);
         parser = new Parser(scanner);
         assertThrows(AcdcSyntaxException.class, () -> {parser.parse();});

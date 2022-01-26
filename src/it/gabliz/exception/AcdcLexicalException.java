@@ -1,4 +1,6 @@
-package it.gabliz.util;
+package it.gabliz.exception;
+
+import it.gabliz.util.Logger;
 
 /**
  * Exception lanciata per errori inerenti al lessico.

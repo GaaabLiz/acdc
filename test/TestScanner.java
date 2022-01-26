@@ -1,8 +1,8 @@
 import it.gabliz.scanner.Scanner;
 import it.gabliz.token.Token;
 import it.gabliz.token.TokenType;
-import it.gabliz.util.AcdcLexicalException;
-import it.gabliz.util.TokenConstructorException;
+import it.gabliz.exception.AcdcLexicalException;
+import it.gabliz.exception.TokenConstructorException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

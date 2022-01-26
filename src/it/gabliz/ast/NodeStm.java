@@ -1,4 +1,4 @@
 package it.gabliz.ast;
 
-public class NodeStm extends NodeDecSt{
+public abstract class NodeStm extends NodeDecSt{
 }

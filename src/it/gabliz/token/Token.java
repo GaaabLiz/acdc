@@ -1,7 +1,7 @@
 package it.gabliz.token;
 
 import it.gabliz.util.Logger;
-import it.gabliz.util.TokenConstructorException;
+import it.gabliz.exception.TokenConstructorException;
 
 import java.util.*;
 

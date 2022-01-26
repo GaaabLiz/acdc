@@ -1,4 +1,4 @@
 package it.gabliz.ast;
 
-public class NodeExpr extends NodeAST{
+public abstract class NodeExpr extends NodeAST {
 }

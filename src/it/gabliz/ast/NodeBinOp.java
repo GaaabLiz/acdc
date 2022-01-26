@@ -1,5 +1,7 @@
 package it.gabliz.ast;
 
+import it.gabliz.visitor.IVisitor;
+
 public class NodeBinOp extends NodeExpr {
 
     private LangOper op;
@@ -35,5 +37,10 @@ public class NodeBinOp extends NodeExpr {
     @Override
     public String toString() {
         return "OP: " + op + "," + "left: " + left + "," + "right: " + right;
+    }
+
+    @Override
+    public void accept(IVisitor visitor) {
+        visitor.visit(this);
     }
 }

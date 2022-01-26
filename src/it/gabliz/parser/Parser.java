@@ -1,6 +1,10 @@
 package it.gabliz.parser;
 
 import it.gabliz.ast.*;
+import it.gabliz.exception.AcdcLexicalException;
+import it.gabliz.exception.AcdcSyntaxException;
+import it.gabliz.exception.ScannerException;
+import it.gabliz.exception.TokenConstructorException;
 import it.gabliz.scanner.Scanner;
 import it.gabliz.token.Token;
 import it.gabliz.token.TokenType;
@@ -45,6 +49,7 @@ public class Parser {
      * @throws AcdcSyntaxException se viene rilevato un errore di sintassi.
      */
     private Token match(TokenType type) throws AcdcSyntaxException, TokenConstructorException, IOException, AcdcLexicalException {
+        /* TODO : togliere valore di ritorno */
         Token tk = scanner.peekToken();
         if (type.equals(tk.getTipo())) {
             scanner.nextToken();
@@ -53,7 +58,6 @@ public class Parser {
         else throw new AcdcSyntaxException("Errore di sintassi rilevato durante il match. Il parser si aspettava " +
                 "un token di tipo " + type + " ma ha trovato un token di tipo " + tk.getTipo() + "(Riga"
                 + tk.getRiga() + ").");
-
     }
 
     /**
@@ -93,6 +97,7 @@ public class Parser {
 
     /** Parsing della produzione DSs */
     private ArrayList<NodeDecSt> parseDSs() throws IOException, TokenConstructorException, AcdcLexicalException, AcdcSyntaxException {
+        /* TODO : Togliere valore di ritorno e mettere null */
         Token token = scanner.peekToken();
         switch(token.getTipo()) {
             case TYFLOAT:
@@ -239,6 +244,8 @@ public class Parser {
     }
 
     private NodeExpr parseExpP(NodeExpr left) throws IOException, TokenConstructorException, AcdcLexicalException, AcdcSyntaxException {
+        /* TODO VEDERE video 27 aprile per eventiali problemi */
+        /* TODO provare a lasciare solo SEMI nel terzo branch */
         Token tk = scanner.peekToken();
         NodeExpr temp;
         switch(tk.getTipo()) {

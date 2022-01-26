@@ -1,6 +1,7 @@
-package it.gabliz.util;
+package it.gabliz.exception;
 
 import it.gabliz.token.Token;
+import it.gabliz.util.Logger;
 
 /**
  * Exception lanciata per errori inerenti alla sintassi.

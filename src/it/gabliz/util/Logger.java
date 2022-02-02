@@ -15,6 +15,8 @@ public class Logger {
     private static final String INFO_PREFIX = "[INFO]";
     private static final Boolean ENABLE_LOGGIN = true;
     private static final Boolean ENABLE_DEBUG = true;
+    private final StringBuilder typeCheckingErrors;
+    private Integer typeCheckingErrorsCounter = 0;
 
     /**
      * Costruttore della classe.
@@ -22,6 +24,9 @@ public class Logger {
      */
     public Logger(String sectionLogName) {
         this.sectionLogName = sectionLogName.toUpperCase();
+        this.typeCheckingErrors = new StringBuilder();
+        typeCheckingErrors.append("--------------------\n");
+        typeCheckingErrors.append("TYPE CHECKING ERRORS\n");
     }
 
     /**
@@ -88,6 +93,18 @@ public class Logger {
             System.out.print("\n\n");
             Logger.w("LOGGER", "Trovato new line.");
         }
+    }
+
+    public void addTypeCheckingError(String errorMessage) {
+        typeCheckingErrors.append("- ").append(errorMessage).append("\n");
+        typeCheckingErrorsCounter++;
+        this.e(errorMessage);
+    }
+
+    public String getTypeCheckingLogString() {
+        if(typeCheckingErrorsCounter == 0)
+            typeCheckingErrors.append("none\n").append("--------------------\n");
+        return typeCheckingErrors.toString();
     }
 
 }

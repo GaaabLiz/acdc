@@ -1,7 +1,5 @@
 package it.gabliz.symboltable;
 
-import it.gabliz.ast.Attributes;
-
 import java.util.HashMap;
 
 public class SymbolTable {

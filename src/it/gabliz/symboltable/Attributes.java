@@ -1,4 +1,6 @@
-package it.gabliz.ast;
+package it.gabliz.symboltable;
+
+import it.gabliz.ast.TypeDescriptor;
 
 public class Attributes {
 

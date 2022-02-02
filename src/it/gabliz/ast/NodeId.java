@@ -1,5 +1,6 @@
 package it.gabliz.ast;
 
+import it.gabliz.symboltable.Attributes;
 import it.gabliz.visitor.IVisitor;
 
 public class NodeId extends NodeAST {

@@ -1,0 +1,206 @@
+/*
+   parser.cup
+   @author Gabriele Lizzos 20025867
+*/
+
+package cup.example;
+
+import java_cup.runtime.*;
+import cup.example.Lexer;
+import java.io.IOException;
+import java.io.File;
+import java.io.FileInputStream;
+
+parser code {:
+
+	protected Lexer lexer;
+  	private StringBuffer log = new StringBuffer();
+  	private StringBuffer code = new StringBuffer();
+  	private int i = 0;
+  	private char[] registro =  "abcdefghijklmnopqrstuvwxyz".toCharArray(); ;
+  	SymbolTable symbolTable;
+
+  	public String codeToString() {
+		return code.toString().trim();
+	}
+
+  	private char nuovoRegistro() {
+		char c = registro[i];
+		i++;
+		return c;
+	}
+
+  	public String toString() {
+		return log.toString();
+  	}
+
+:}
+
+/* define how to connect to the scanner! */
+init with {:
+	symbolTable = new SymbolTable();
+	SymbolTable.init();
+	ComplexSymbolFactory f = new ComplexSymbolFactory();
+	symbolFactory = f;
+	File file = new File("input.txt");
+	FileInputStream fis = null;
+  	try {
+  		fis = new FileInputStream(file);
+  	} catch (IOException e) {
+    	e.printStackTrace();
+  	}
+  	lexer = new Lexer(f,fis);
+:};
+scan with {: return lexer.next_token(); :};
+
+/* Terminals (tokens returned by the scanner). */
+terminal TYINT, TYFLOAT, ASSIGN, PRINT, PLUS, MINUS, TIMES, DIVIDE, SEMI;
+terminal String INT, FLOAT, ID;
+
+/* Non terminals */
+non terminal  TypeDescriptor Prg, DSs, Dcl, Stm, Expr, Val;
+
+/* Precedences */
+precedence left PLUS, MINUS;
+precedence left TIMES, DIVIDE;
+
+/* The grammar rules */
+Prg ::= DSs:d 					{: RESULT = d; System.out.println(code.toString()); :};
+
+DSs ::= Dcl:dcl DSs 			{: RESULT = dcl; :}
+	| Stm:stm DSs 				{: RESULT = stm; :} | {: :};
+
+Dcl ::= TYFLOAT ID:i SEMI 		{:
+									if(symbolTable.lookup(i) != null) {
+										RESULT = TypeDescriptor.ERROR;
+										log.append("Variabile già dichiarata in table!\n");
+									} else {
+										symbolTable.enter(i, new Attributes(TypeDescriptor.FLOAT));
+										RESULT = TypeDescriptor.FLOAT;
+										symbolTable.lookup(i).setRegister(nuovoRegistro());
+									}
+								:}
+	| TYINT ID:i SEMI 			{:
+									if(symbolTable.lookup(i) != null) {
+										RESULT = TypeDescriptor.ERROR;
+										log.append("Variabile già dichiarata in table!\n");
+									} else {
+										symbolTable.enter(i, new Attributes(TypeDescriptor.INT));
+										RESULT = TypeDescriptor.INT;
+										symbolTable.lookup(i).setRegister(nuovoRegistro());
+									}
+								:};
+
+Stm ::= ID:i ASSIGN Expr:e SEMI  {:
+									if(symbolTable.lookup(i) == null) {
+										RESULT = TypeDescriptor.ERROR;
+										log.append("Assegnamento ad una variabile non dichiarata!\n");
+									} else {
+                                        if(symbolTable.lookup(i).getTipo().equals(TypeDescriptor.FLOAT)) {
+                                            RESULT = TypeDescriptor.FLOAT;
+                                            char s = symbolTable.lookup(i).getRegister();
+                                            code.append("s" + s);
+                                            code.append(" 0 k ");
+                                        } else if(symbolTable.lookup(i).getTipo().equals(TypeDescriptor.INT)) {
+                                            if(e.equals(TypeDescriptor.INT)){
+                                                RESULT = TypeDescriptor.INT;
+                                                char s = symbolTable.lookup(i).getRegister();
+                                                code.append("s" + s);
+                                                code.append(" 0 k ");
+                                            } else {
+                                                RESULT = TypeDescriptor.FLOAT;
+                                                log.append("Errore: assegnamento di un float ad un int\n");
+                                            }
+                                        } else {
+                                            RESULT = TypeDescriptor.FLOAT;
+                                        }
+			                        }
+		                        :}
+    | PRINT ID:i SEMI           {:
+                                    if(symbolTable.lookup(i) == null) {
+                                        RESULT = TypeDescriptor.ERROR;
+                                        log.append("Stampa di una variabile non dichiarata!\n");
+                                    } else {
+                                        RESULT = symbolTable.lookup(i).getTipo();
+                                        code.append("l" + symbolTable.lookup(i).getRegister() + " p P ");
+                                    }
+		                        :};
+
+Expr ::= Expr:e1 PLUS Expr:e2   {:
+                                    if(e1.equals(TypeDescriptor.ERROR) || e2.equals(TypeDescriptor.ERROR)) {
+                                        RESULT = TypeDescriptor.ERROR;
+                                        log.append("Tipi incompatibili\n");
+                                    } else if(e1 == e2) {
+                                        RESULT = e1;
+                                        code.append("+ ");
+                                    } else {
+                                        if(e1 == TypeDescriptor.INT) {
+                                            log.append("Tipi incompatibili\n");
+                                            RESULT = TypeDescriptor.ERROR;
+                                        } else {
+                                            RESULT = TypeDescriptor.FLOAT;
+                                            code.append("5 k ");
+                                            code.append("+ ");
+                                        }
+                                    }
+		                        :}
+    | Expr:e1 MINUS Expr:e2     {:
+                                    if(e1.equals(TypeDescriptor.ERROR) || e2.equals(TypeDescriptor.ERROR)) {
+                                        RESULT = TypeDescriptor.ERROR;
+                                        log.append("Tipi incompatibili\n");
+                                    } else if(e1 == e2) {
+                                        RESULT = e1; code.append("- ");
+                                    } else {
+                                        if(e1 == TypeDescriptor.INT) {
+                                            log.append("Tipi incompatibili\n");
+                                            RESULT = TypeDescriptor.ERROR;
+                                        }else {
+                                            RESULT = TypeDescriptor.FLOAT;
+                                            code.append("5 k ");
+                                            code.append("- ");
+                                        }
+                                    }
+                                :}
+    | Expr:e1 TIMES Expr:e2
+                                {:
+                                    if(e1.equals(TypeDescriptor.ERROR) || e2.equals(TypeDescriptor.ERROR)) {
+                                        RESULT = TypeDescriptor.ERROR;
+                                        log.append("Tipi incompatibili\n");
+                                    } else if(e1 == e2){
+                                        RESULT = e1; code.append("* ");
+                                    } else {
+                                        if(e1 == TypeDescriptor.INT) {
+                                            log.append("Tipi incompatibili\n");
+                                            RESULT = TypeDescriptor.ERROR;
+                                        } else {
+                                            RESULT = TypeDescriptor.FLOAT; code.append("5 k "); code.append("* ");
+                                        }
+                                    }
+                                :}
+    | Expr:e1 DIVIDE Expr:e2
+                                {:
+                                    if(e1.equals(TypeDescriptor.ERROR) || e2.equals(TypeDescriptor.ERROR)) {
+                                        RESULT = TypeDescriptor.ERROR;
+                                        log.append("Tipi incompatibili\n");
+                                    } else if(e1 == e2) { 
+                                        RESULT = e1;  code.append("/ ");
+                                    } else {
+                                        if(e1 == TypeDescriptor.INT) {
+                                            log.append("Tipi incompatibili\n");
+                                            RESULT = TypeDescriptor.ERROR;
+                                        } else { 
+                                            RESULT = TypeDescriptor.FLOAT; code.append("5 k "); code.append("/ ");   
+                                        }
+                                    }
+                                :} 
+    | Val:va                    {: RESULT = va; :};
+
+Val ::= INT:i                   {: RESULT = TypeDescriptor.INT; code.append(i + " ");  :}
+	| FLOAT:f                   {: RESULT = TypeDescriptor.FLOAT; code.append(f + " ");  :}
+	| ID:i                      {: 
+	                                if(symbolTable.lookup(i) == null) {
+                                        RESULT = TypeDescriptor.ERROR;
+                                        log.append("Variabile non dichiarata!\n");
+                                    } else RESULT = symbolTable.lookup(i).getTipo();
+                                     code.append("l " + symbolTable.lookup(i).getRegister() + " ");	
+                                 :};

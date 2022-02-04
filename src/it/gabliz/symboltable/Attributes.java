@@ -2,6 +2,11 @@ package it.gabliz.symboltable;
 
 import it.gabliz.ast.TypeDescriptor;
 
+/**
+ * Classe che rappresenta l'istanza 'attributo' per la symbol table
+ * @see SymbolTable
+ * @author Gabliz
+ */
 public class Attributes {
 
     private TypeDescriptor tipo;

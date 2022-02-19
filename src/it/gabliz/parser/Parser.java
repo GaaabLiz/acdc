@@ -20,10 +20,10 @@ import java.util.ArrayList;
 public class Parser {
 
     /** Variabile scanner fase precedente */
-    private Scanner scanner;
+    private final Scanner scanner;
 
     /** Lista dei nodi Dec/St */
-    private ArrayList<NodeDecSt> arrayNode;
+    private final ArrayList<NodeDecSt> arrayNode;
 
     /** Classe per gestire i log di questa classe.
      * @see Logger per gestione log. */
@@ -49,7 +49,6 @@ public class Parser {
      * @throws AcdcSyntaxException se viene rilevato un errore di sintassi.
      */
     private Token match(TokenType type) throws AcdcSyntaxException, TokenConstructorException, IOException, AcdcLexicalException {
-        /* TODO : togliere valore di ritorno */
         Token tk = scanner.peekToken();
         if (type.equals(tk.getTipo())) {
             scanner.nextToken();
@@ -78,9 +77,8 @@ public class Parser {
     }
 
     /** Parsing della produzione Prg */
-    private NodeProgram parsePrg() throws AcdcSyntaxException, TokenConstructorException, IOException, AcdcLexicalException, ScannerException {
+    private NodeProgram parsePrg() throws AcdcSyntaxException, TokenConstructorException, IOException, AcdcLexicalException {
         Token tk = scanner.peekToken();
-
         switch (tk.getTipo()) {
             case TYFLOAT:
             case TYINT:
@@ -96,27 +94,25 @@ public class Parser {
     }
 
     /** Parsing della produzione DSs */
-    private ArrayList<NodeDecSt> parseDSs() throws IOException, TokenConstructorException, AcdcLexicalException, AcdcSyntaxException {
-        /* TODO : Togliere valore di ritorno e mettere null */
+    private void parseDSs() throws IOException, TokenConstructorException, AcdcLexicalException, AcdcSyntaxException {
         Token token = scanner.peekToken();
         switch(token.getTipo()) {
             case TYFLOAT:
             case TYINT:
                 arrayNode.add(parseDcl());
                 parseDSs();
-                return arrayNode;
+                return;
             case ID:
             case PRINT:
                 arrayNode.add(parseStm());
                 parseDSs();
-                return arrayNode;
+                return;
             case EOF:
-                return arrayNode;
+                return;
             default:
                 break;
         }
         throw new AcdcSyntaxException(AcdcSyntaxException.SYNTAX_ERROR_TEMPLATE, token, token.getRiga());
-
     }
 
     /** parsing della produzione Dcl */
@@ -141,7 +137,6 @@ public class Parser {
 
     /** parsing della produzione Stm */
     private NodeStm parseStm() throws IOException, TokenConstructorException, AcdcLexicalException, AcdcSyntaxException {
-
         Token tk = scanner.peekToken();
         NodeExpr t;
         switch(tk.getTipo()) {
@@ -190,7 +185,6 @@ public class Parser {
                 return parseTrP(temp);
             default:
                 break;
-
         }
         throw new AcdcSyntaxException(AcdcSyntaxException.SYNTAX_ERROR_TEMPLATE, tk, tk.getRiga());
     }
@@ -238,18 +232,15 @@ public class Parser {
                 return left;
             default:
                 break;
-
         }
         throw new AcdcSyntaxException(AcdcSyntaxException.SYNTAX_ERROR_TEMPLATE, tk, tk.getRiga());
     }
 
+    /** parsing della produzione ExpP */
     private NodeExpr parseExpP(NodeExpr left) throws IOException, TokenConstructorException, AcdcLexicalException, AcdcSyntaxException {
-        /* TODO VEDERE video 27 aprile per eventiali problemi */
-        /* TODO provare a lasciare solo SEMI nel terzo branch */
         Token tk = scanner.peekToken();
         NodeExpr temp;
         switch(tk.getTipo()) {
-
             case PLUS:
                 tk = match(TokenType.PLUS);
                 temp = parseTr();
@@ -268,7 +259,6 @@ public class Parser {
             default:
                 break;
         }
-
         throw new AcdcSyntaxException(AcdcSyntaxException.SYNTAX_ERROR_TEMPLATE, tk, tk.getRiga());
     }
 }

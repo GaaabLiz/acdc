@@ -149,7 +149,8 @@ Expr ::= Expr:e1 PLUS Expr:e2   {:
                                         RESULT = TypeDescriptor.ERROR;
                                         log.append("Tipi incompatibili\n");
                                     } else if(e1 == e2) {
-                                        RESULT = e1; code.append("- ");
+                                        RESULT = e1;
+                                        code.append("- ");
                                     } else {
                                         if(e1 == TypeDescriptor.INT) {
                                             log.append("Tipi incompatibili\n");

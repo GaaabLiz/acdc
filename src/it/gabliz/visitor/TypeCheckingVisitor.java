@@ -7,12 +7,14 @@ import it.gabliz.symboltable.SymbolTable;
 import it.gabliz.util.Logger;
 
 /*
-il programma chiama il visitor di tutti i nodi e no nsi ferma al primo errore.
-il promamma ha un erroe se ce qualche nodo settato con ERROR:
+
+DA RICORDARE:
+- il programma chiama il visitor di tutti i nodi e no nsi ferma al primo errore.
+- il promamma ha un erroe se ce qualche nodo settato con ERROR:
 
  */
 
-
+/** Classe gestione controllo tipi */
 public class TypeCheckingVisitor implements IVisitor {
 	private final Logger logger;
 
@@ -44,7 +46,7 @@ public class TypeCheckingVisitor implements IVisitor {
 			node.setTypeDescriptor(id.getTypeDescriptor());
 		} else {
 			node.setTypeDescriptor(TypeDescriptor.ERROR);
-			logger.addTypeCheckingError("{NodeAssign} Impossibile assegnare l'esprresione.");
+			logger.addTypeCheckingError("{NodeAssign} Impossibile assegnare l'espressione.");
 		}
 	}
 
@@ -142,8 +144,7 @@ public class TypeCheckingVisitor implements IVisitor {
 		TypeDescriptor typeDescriptor = node.getId().getTypeDescriptor();
 		node.setTypeDescriptor(typeDescriptor);
 	}
-	
-	
+
 	private boolean compatible(TypeDescriptor t1, TypeDescriptor t2) {
 		return (!t1.equals(TypeDescriptor.ERROR) && !t2.equals(TypeDescriptor.ERROR) && t1.equals(t2)) || (t1.equals(TypeDescriptor.FLOAT) && t2.equals(TypeDescriptor.INT));
 	}

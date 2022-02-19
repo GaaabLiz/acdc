@@ -18,18 +18,15 @@ public class NodeProgram extends NodeAST {
         for(NodeDecSt node : n) {
             s.append("<").append(node.toString()).append(">");
         }
-
         return s.toString();
     }
-
 
     public ArrayList<NodeDecSt> getN() {
         return n;
     }
+
     @Override
     public void accept(IVisitor visitor) {
         visitor.visit(this);
     }
-
-
 }

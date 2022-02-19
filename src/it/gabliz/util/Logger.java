@@ -8,13 +8,14 @@ import it.gabliz.token.Token;
  */
 public class Logger {
 
+    private static final Boolean ENABLE_LOGGIN = true;
+    private static final Boolean ENABLE_DEBUG = true;
+
     private final String sectionLogName;
     private static final String DEBUG_PREFIX = "[DEBUG]";
     private static final String ERROR_PREFIX = "[ERROR]";
     private static final String WARN_PREFIX = "[WARNING]";
     private static final String INFO_PREFIX = "[INFO]";
-    private static final Boolean ENABLE_LOGGIN = true;
-    private static final Boolean ENABLE_DEBUG = true;
     private final StringBuilder typeCheckingErrors;
     private Integer typeCheckingErrorsCounter = 0;
 

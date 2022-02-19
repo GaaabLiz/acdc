@@ -2,7 +2,7 @@ package it.gabliz.ast;
 
 import it.gabliz.visitor.IVisitor;
 
-public class NodeAssign extends NodeStm{
+public class NodeAssign extends NodeStm {
 	
 	private NodeId id;
 	private NodeExpr expr;
@@ -19,10 +19,11 @@ public class NodeAssign extends NodeStm{
 	public NodeExpr getExpr() {
 		return expr;
 	}
+
 	public void setExpr(NodeExpr expr) {
 		this.expr = expr;
 	}
-	
+
 	public String toString() {
 		return "ID:  " + id + ", " + "Expr: " + expr;
 	}

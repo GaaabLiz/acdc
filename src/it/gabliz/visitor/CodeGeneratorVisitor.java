@@ -3,6 +3,7 @@ package it.gabliz.visitor;
 import it.gabliz.ast.*;
 import it.gabliz.symboltable.SymbolTable;
 
+/** Classe per la generazione del codice finale tramite un visitor */
 public class CodeGeneratorVisitor implements IVisitor {
 
     private static char[] reg;

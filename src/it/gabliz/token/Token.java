@@ -69,16 +69,26 @@ public class Token {
 	 */
 	private String getStringWithoutVal() {return "<" + tipo + "," + "r:" + riga + ">";}
 
+	/**
+	 * Metodo per dare log warning in caso di costruttore errato.
+	 */
 	private void checkTokenConstructorWithVal() {
 		if(!tokenTypesWithValues.contains(this.tipo))
 			Logger.w(CLASS_NAME, "Il costruttore per il token " + this.tipo + " è errato.");
 	}
 
+	/**
+	 * Metodo per dare log warning in caso di costruttore errato.
+	 */
 	private void checkTokenConstructorWithoutVal() {
 		if(tokenTypesWithValues.contains(this.tipo))
 			Logger.w(CLASS_NAME, "Il costruttore per il token " + this.tipo + " è errato (controllare presenza/assenza valore).");
 	}
 
+	/**
+	 * Metodo per fare stampare un log con il tipo di token creato
+	 * @return il token creato.
+	 */
 	public Token logCreation() {
 		Logger.i(CLASS_NAME, "Creato nuovo token: \"" + this + "\".");
 		return this;
